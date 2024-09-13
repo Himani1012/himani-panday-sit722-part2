@@ -1,20 +1,38 @@
-# Write Kubernetes Deployment Script
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-microservice
+  name: book-catalog
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: my-microservice
+      app: book-catalog
   template:
     metadata:
       labels:
-        app: my-microservice
+        app: book-catalog
     spec:
       containers:
-      - name: my-microservice
-        image: my-microservice:latest
+      - name: book-catalog
+        image: week8:1
+        imagePullPolicy: Never
         ports:
-        - containerPort: 80
+        - containerPort: 8000
+        env: 
+        - name: DATABASE_URL
+          value: "postgresql://week006_user:FPqF6n96AIMCjihaKbUdxSApjPKIgxfy@dpg-crhvrqrv2p9s73bhgojg-a.oregon-postgres.render.com/week006"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-catalog
+spec:
+  selector:
+    app: book-catalog
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      
